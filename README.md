@@ -1,4 +1,55 @@
-# 📱 Acees Group - Sistema de Control de Acceso NFC
+SM2_EXAMEN_PRACTICO
+📘 Curso: Solucioines Moviles II
+
+Móviles II
+
+👤 Alumno:
+
+[Juan Brendon Luna Juarez]
+
+📅 Fecha:
+
+21 de octubre de 2025
+
+🌐 Repositorio GitHub:
+
+https://github.com/LunaJuarezJuan/SM2_EXAMEN_PRACTICO
+
+Descripción del Proyecto
+
+Aplicación móvil desarrollada en Flutter (MVVM) que implementa un sistema de control de acceso mediante NFC y ahora incluye la funcionalidad de historial de inicios de sesión para usuarios autenticados.
+
+Historia de Usuario Implementada
+
+Como usuario autenticado, quiero ver un historial de mis inicios de sesión, para saber cuándo y desde qué dispositivo accedí a mi cuenta.
+
+Criterios de Aceptación
+
+Se registra el usuario, la fecha, hora e IP al iniciar sesión.
+
+En la vista “Historial de inicios de sesión”, el usuario puede visualizar sus accesos previos.
+
+Los registros están ordenados del más reciente al más antiguo.
+
+Funcionalidades Clave
+
+Registro automático del inicio de sesión con fecha/hora/IP.
+
+Visualización del historial de accesos en una lista ordenada.
+
+Integración con backend Node.js y base de datos MongoDB.
+
+Persistencia en la nube (Render.com).
+
+Arquitectura MVVM con Provider.
+
+Evidencias del APP
+
+Login con registro de IP
+
+Pantalla de historial de inicios
+
+Orden descendente de accesos# 📱 Acees Group - Sistema de Control de Acceso NFC
 
 Sistema completo de control de acceso con tecnología NFC desarrollado en Flutter con arquitectura MVVM.
 
@@ -13,87 +64,5 @@ Sistema completo de control de acceso con tecnología NFC desarrollado en Flutte
 └── 📚 RAILWAY_DEPLOY.md       # Guía de despliegue
 ```
 
-## 🚀 Despliegue
 
-### 🌐 Producción (Railway)
-- **URL**: https://acees-group-backend-production.up.railway.app
-- **Documentación**: Ver [RAILWAY_DEPLOY.md](RAILWAY_DEPLOY.md)
 
-### 💻 Desarrollo Local
-```bash
-# Clonar repositorio
-git clone https://github.com/KrCrimson/Acees_Group.git
-cd Acees_Group
-
-# Iniciar backend
-./start-backend.sh
-
-# Iniciar app Flutter (en otra terminal)
-flutter run
-```
-
-## 📋 Características
-
-- ✅ **Autenticación segura** con JWT
-- ✅ **Lectura NFC** con manejo de múltiples tags
-- ✅ **Modo offline** con sincronización automática
-- ✅ **Dashboard administrativo** completo
-- ✅ **Gestión de asistencias** en tiempo real
-- ✅ **Reportes y estadísticas** avanzadas
-- ✅ **Arquitectura MVVM** escalable
-
-## 🛠️ Tecnologías
-
-### Frontend (Flutter)
-- **Patrón**: MVVM con Provider
-- **Base de datos local**: SQLite
-- **NFC**: flutter_nfc_kit
-- **HTTP**: http package
-- **Estado**: Provider + ChangeNotifier
-
-### Backend (Node.js)
-- **Framework**: Express.js
-- **Base de datos**: MongoDB Atlas
-- **Autenticación**: bcrypt
-- **Despliegue**: Railway
-- **CORS**: Configurado para móviles
-
-## 📡 API Endpoints
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| `GET` | `/api/health` | Health check |
-| `POST` | `/login` | Autenticación |
-| `GET` | `/alumnos/:codigo` | Buscar alumno |
-| `POST` | `/asistencias` | Registrar asistencia |
-| `GET` | `/asistencias` | Listar asistencias |
-
-## 🔧 Configuración
-
-### Variables de Entorno (Backend)
-```bash
-MONGODB_URI=mongodb+srv://...
-NODE_ENV=production
-PORT=3000
-HOST=0.0.0.0
-```
-
-### Configuración Flutter
-```dart
-// lib/config/api_config.dart
-static const String _baseUrlProd = 'https://tu-app.up.railway.app';
-static const bool _isProduction = true;
-```
-
-## 🚀 Inicio Rápido
-
-1. **Clonar** el repositorio
-2. **Backend**: `./start-backend.sh`
-3. **Flutter**: `flutter run`
-4. **Producción**: Ver [RAILWAY_DEPLOY.md](RAILWAY_DEPLOY.md)
-
----
-
-**Desarrollado por**: Acees Group  
-**Tecnología**: Flutter + Node.js + MongoDB  
-**Despliegue**: Railway Platform
