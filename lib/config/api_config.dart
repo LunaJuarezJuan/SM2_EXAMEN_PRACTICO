@@ -1,13 +1,13 @@
 class ApiConfig {
-  // Para desarrollo local
-  static const String _baseUrlDev = 'http://192.168.1.51:3000';
+  // Para desarrollo local (usar localhost para Flutter Web / Chrome)
+  static const String _baseUrlDev = 'http://localhost:3000';
 
   // Para producción - URL de Railway
   static const String _baseUrlProd =
       'https://aceesgroup-production.up.railway.app';
 
   // Cambiar a true cuando compiles la APK para producción
-  static const bool _isProduction = true;
+  static const bool _isProduction = false;
 
   static String get baseUrl => _isProduction ? _baseUrlProd : _baseUrlDev;
 

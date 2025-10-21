@@ -8,6 +8,7 @@ import '../../widgets/session_status_widget.dart';
 import '../../widgets/connectivity_status_widget.dart';
 import '../../widgets/conflict_alert_widget.dart';
 import '../login_view.dart';
+import 'login_history_view.dart';
 import '../student_verification_view.dart';
 import '../admin/presencia_dashboard_view.dart';
 
@@ -139,34 +140,51 @@ class _UserNfcViewState extends State<UserNfcView> with WidgetsBindingObserver {
                 onSelected: (value) {
                   if (value == 'logout') {
                     _handleLogout();
+                  } else if (value == 'login_history') {
+                    final userId = authViewModel.currentUser?.id;
+                    if (userId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginHistoryView(userId: userId)),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Usuario no autenticado')));
+                    }
                   }
                 },
-                itemBuilder:
-                    (context) => [
-                      PopupMenuItem(
-                        value: 'profile',
-                        child: ListTile(
-                          leading: Icon(Icons.person),
-                          title: Text('Usuario'),
-                          subtitle: Text(
-                            authViewModel.currentUser?.nombreCompleto ?? '',
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                        ),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'profile',
+                    child: ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text('Usuario'),
+                      subtitle: Text(
+                        authViewModel.currentUser?.nombreCompleto ?? '',
                       ),
-                      PopupMenuDivider(),
-                      PopupMenuItem(
-                        value: 'logout',
-                        child: ListTile(
-                          leading: Icon(Icons.logout, color: Colors.red),
-                          title: Text(
-                            'Cerrar Sesión',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                        ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'login_history',
+                    child: ListTile(
+                      leading: Icon(Icons.history),
+                      title: Text('Historial de sesiones'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'logout',
+                    child: ListTile(
+                      leading: Icon(Icons.logout, color: Colors.red),
+                      title: Text(
+                        'Cerrar Sesión',
+                        style: TextStyle(color: Colors.red),
                       ),
-                    ],
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
               );
             },
           ),

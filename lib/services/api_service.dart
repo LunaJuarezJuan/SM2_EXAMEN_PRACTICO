@@ -8,6 +8,7 @@ import '../models/facultad_escuela_model.dart';
 import '../models/visita_externo_model.dart';
 import '../models/decision_manual_model.dart';
 import '../models/presencia_model.dart';
+import '../models/login_history_model.dart';
 import '../config/api_config.dart';
 
 class ApiService {
@@ -394,6 +395,25 @@ class ApiService {
       if (response.statusCode != 201) {
         final error = json.decode(response.body);
         throw Exception(error['error'] ?? 'Error al registrar asistencia');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  // Obtener historial de inicios de sesión por usuario
+  Future<List<LoginHistoryModel>> getLoginHistory(String userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/login-history/$userId'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((json) => LoginHistoryModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Error al obtener historial de login: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Error de conexión: $e');

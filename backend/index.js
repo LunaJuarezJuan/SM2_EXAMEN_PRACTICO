@@ -7,16 +7,25 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 
-// Configuración CORS optimizada para Railway
+// Configuración CORS: en desarrollo permitimos cualquier origen (útil para emuladores/web);
+// en producción restringimos a orígenes confiables y mantenemos credentials=true.
 const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'http://192.168.1.51:3000',
-    'https://acees-group-backend-production.up.railway.app',
-    // Permitir cualquier origen en desarrollo
-    ...(process.env.NODE_ENV !== 'production' ? ['*'] : [])
-  ],
-  credentials: true,
+  origin: function(origin, callback) {
+    // En desarrollo permitir cualquier origen (incluye requests sin origin como curl/postman)
+    if (process.env.NODE_ENV !== 'production') return callback(null, true);
+
+    const allowed = [
+      'http://localhost:3000',
+      'http://192.168.1.51:3000',
+      'https://acees-group-backend-production.up.railway.app'
+    ];
+
+    if (!origin) return callback(null, true);
+    if (allowed.indexOf(origin) !== -1) return callback(null, true);
+    return callback(new Error('CORS policy: Origin not allowed'));
+  },
+  // Evitar conflicto wildcard origin + credentials en desarrollo
+  credentials: process.env.NODE_ENV === 'production',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
@@ -161,6 +170,19 @@ const SessionGuardSchema = new mongoose.Schema({
   fecha_fin: Date
 }, { collection: 'sesiones_guardias', strict: false, _id: false });
 const SessionGuard = mongoose.model('sesiones_guardias', SessionGuardSchema);
+
+// Modelo para historial de inicios de sesión
+const LoginHistorySchema = new mongoose.Schema({
+  _id: String,
+  user_id: String,
+  email: String,
+  ip_address: String,
+  user_agent: String,
+  timestamp: { type: Date, default: Date.now }
+}, { collection: 'login_history', strict: false, _id: false });
+// Index para consultas por usuario y orden por fecha (más reciente primero)
+LoginHistorySchema.index({ user_id: 1, timestamp: -1 });
+const LoginHistory = mongoose.model('login_history', LoginHistorySchema);
 
 // Modelo de usuarios mejorado con validaciones - EXACTO como MongoDB Atlas
 const UserSchema = new mongoose.Schema({
@@ -379,6 +401,25 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
 
+    // Registrar historial de login
+    try {
+      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip || '';
+      const userAgent = req.headers['user-agent'] || '';
+
+      const loginRecord = new LoginHistory({
+        _id: new mongoose.Types.ObjectId().toString(),
+        user_id: user._id,
+        email: user.email,
+        ip_address: Array.isArray(ip) ? ip[0] : ip,
+        user_agent: userAgent,
+        timestamp: new Date()
+      });
+
+      await loginRecord.save();
+    } catch (logErr) {
+      console.error('Error guardando historial de login:', logErr.message || logErr);
+    }
+
     // Enviar datos del usuario (sin contraseña)
     res.json({
       id: user._id,
@@ -392,6 +433,17 @@ app.post('/login', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: 'Error en el servidor' });
+  }
+});
+
+// Endpoint para obtener historial de inicios de sesión por usuario
+app.get('/login-history/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const historial = await LoginHistory.find({ user_id: userId }).sort({ timestamp: -1 });
+    res.json(historial);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener historial de inicios de sesión' });
   }
 });
 
